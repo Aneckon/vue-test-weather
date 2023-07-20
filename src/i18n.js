@@ -1,0 +1,51 @@
+import { createI18n } from 'vue-i18n';
+
+export const i18n = createI18n({
+  locale: 'en',
+  globalInjection: true,
+  legacy: false,
+  messages: {
+    en: {
+      message: {
+        eng: 'Eng',
+        ukr: 'Ua',
+        favorite: 'Favorite',
+        today: 'Today',
+        nextDays: 'Next 5 days',
+        loading: 'Loading...',
+        addWeather: 'Add Weather',
+        temperature: 'Temperature',
+        home: 'Home',
+        noFavorite: 'No favorite',
+        search: 'Search city...',
+        delete: 'Delete',
+        addFavorite: 'Add Favorite',
+        removeFavorite: 'Remove favorite',
+        yes: 'Yes',
+        no: 'No',
+        descriptionModal: 'Are you sure you want to see?',
+      },
+    },
+    ua: {
+      message: {
+        eng: 'Анг',
+        ukr: 'Укр',
+        favorite: 'Улюблені',
+        today: 'Сьогодні',
+        nextDays: 'Наступні 5 днів',
+        loading: 'Загрузка...',
+        addWeather: 'Додайте погоду',
+        temperature: 'Температура',
+        home: 'Головна',
+        noFavorite: 'Не має улюблених',
+        search: 'Пошук міста...',
+        delete: 'Видалити',
+        addFavorite: 'Додайте в улюблені',
+        removeFavorite: 'Видаліть з улублених',
+        yes: 'Так',
+        no: 'Ні',
+        descriptionModal: 'Ви точно хочете видалити?',
+      },
+    },
+  },
+});
