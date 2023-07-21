@@ -13,7 +13,7 @@ const props = defineProps({ data: Array, day: Number });
 
 const input = ref('');
 const forecastDay = ref(6);
-const forecastList = [];
+const forecastList = ref([]);
 const showModalFavorite = false;
 const forecastShow = ref(false);
 const dropdownShow = ref(false);
@@ -32,14 +32,14 @@ const onChange = (event) => {
 };
 
 const addForecast = () => {
-  if (forecastList.length !== 5) {
+  if (forecastList.value.length !== 5) {
     if (input.length !== 0 || input.indexOf(' ')) {
       axios
         .get(
           `https://api.openweathermap.org/data/2.5/forecast?q=${input.value}&units=metric&appid=406e0d43f1258f2c143ee80e19276799&cnt=${forecastDay.value}&lang=${locale.value}`,
         )
         .then((response) => {
-          forecastList.push(response.data);
+          forecastList.value.push(response.data);
           forecastShow.value = true;
           input.value = '';
         })
@@ -67,7 +67,7 @@ const forecastAddFavorite = () => {
     type: 'success',
     theme: 'dark',
   });
-  localStorage.setItem('favorite', JSON.stringify(forecastList));
+  localStorage.setItem('favorite', JSON.stringify(forecastList.value));
 };
 
 const forecastDelete = (id) => {
@@ -143,6 +143,7 @@ const handledropdownShow = (id) => {
       <input
         v-model="input"
         @change="onChange($event)"
+        @keyup.enter="addForecast"
         type="text"
         :placeholder="t('message.search')"
       />
@@ -175,22 +176,27 @@ const handledropdownShow = (id) => {
   padding: 15px 0;
   margin-bottom: 40px;
 }
+
 .description {
   font-size: 12px;
   height: 25px;
   margin-bottom: 10px;
 }
+
 .head {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 .show {
   display: none;
 }
+
 .city {
   margin-bottom: 20px;
 }
+
 .forecast__add {
   cursor: pointer;
 
@@ -202,9 +208,11 @@ const handledropdownShow = (id) => {
 
   color: #fff;
 }
+
 .forecast__add img {
   margin-right: 10px;
 }
+
 .forecast__list::-webkit-scrollbar {
   width: 1px;
   height: 2px;
@@ -229,31 +237,39 @@ const handledropdownShow = (id) => {
   background: #1f1f1f;
   border-radius: 10px;
 }
+
 .forecast__list li:last-child {
   margin-right: 0px;
 }
+
 .forecast__list li img {
   margin: 0 auto;
 }
+
 .date {
   padding-bottom: 10px;
   margin-bottom: 10px;
 
   border-bottom: 1px solid #fdfdfd;
 }
+
 .icon {
   margin-bottom: 10px;
 }
+
 .forecast__filter button {
   color: #fff;
 }
+
 .forecast__filter .active {
   color: grey;
 }
+
 .dropdown {
   cursor: pointer;
   position: relative;
 }
+
 .dropdown__content {
   position: absolute;
 
@@ -266,12 +282,15 @@ const handledropdownShow = (id) => {
   top: 100%;
   right: 0;
 }
+
 .dropdown__content li {
   margin-bottom: 15px;
 }
+
 .dropdown__content li:last-child {
   margin-bottom: 0;
 }
+
 input {
   width: 100%;
   height: 50px;

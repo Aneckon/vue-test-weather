@@ -1,7 +1,6 @@
 <script setup>
 import axios from 'axios';
 import { useI18n } from 'vue-i18n';
-import { i18n } from '../i18n';
 
 import { computed, ref, watch } from 'vue';
 import { useGeolocation } from '../hooks/useGeoLocation';
