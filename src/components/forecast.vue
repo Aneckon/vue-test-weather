@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, reactive } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import moment from 'moment';
 import { toast } from 'vue3-toastify';
@@ -12,6 +12,7 @@ const emit = defineEmits(['update:day']);
 const props = defineProps({ data: Array, day: Number });
 
 const input = ref('');
+
 const forecastDay = ref(6);
 const forecastList = ref([]);
 const showModalFavorite = false;
@@ -21,6 +22,37 @@ const dropdownId = ref(null);
 const showModal = ref(false);
 
 const { t, locale } = useI18n();
+
+const citiesList = ref([]);
+
+const convertLocale = () => locale.value === 'ua' && 'uk';
+
+const dynamicSearch = async () => {
+  if (!input.value) return;
+
+  citiesList.value = [];
+
+  try {
+    let resp = await fetch(
+      `https://autocomplete.travelpayouts.com/places2?term=${
+        input.value
+      }&locale=${convertLocale()}&types[]=city`,
+    );
+    let cities = await resp.json();
+
+    if (cities) {
+      cities.splice(0, 10).forEach((city) => citiesList.value.push(city.name));
+    }
+  } catch (error) {
+    alert('Network error!');
+  }
+};
+
+const selectCity = (event) => {
+  input.value = event.target.innerText;
+  addForecast();
+  citiesList.value = [];
+};
 
 const hoursName = (date) => {
   const getFullName = moment(date).format('LT');
@@ -141,12 +173,26 @@ const handledropdownShow = (id) => {
       </div>
 
       <input
+        :class="{ 'autocomplete-input-fix': citiesList.length > 0 && input?.length !== 0 }"
         v-model="input"
+        @input="dynamicSearch"
         @change="onChange($event)"
         @keyup.enter="addForecast"
         type="text"
         :placeholder="t('message.search')"
       />
+      <ul v-if="input?.length !== 0" class="cities-list">
+        <li
+          tabindex="0"
+          v-for="(city, index) in citiesList"
+          :key="index"
+          class="cities-list__item"
+          @click="selectCity"
+          @keyup.enter="selectCity"
+        >
+          {{ city }}
+        </li>
+      </ul>
 
       <button class="forecast__add" @click="addForecast">
         <img src="../assets/plus.svg" /> {{ t('message.addWeather') }}
@@ -166,6 +212,21 @@ const handledropdownShow = (id) => {
 </template>
 
 <style>
+.cities-list {
+  width: 100%;
+  border-radius: 0 0 15px 15px;
+  background: #1f1f1f;
+}
+.cities-list__item {
+  padding: 10px 20px;
+}
+.cities-list__item:last-child {
+  border-radius: 0 0 15px 15px;
+}
+.cities-list__item:hover {
+  cursor: pointer;
+  background: #333333;
+}
 .forecast__list {
   display: flex;
   align-items: center;
@@ -178,6 +239,7 @@ const handledropdownShow = (id) => {
 }
 
 .description {
+  text-transform: capitalize;
   font-size: 12px;
   height: 25px;
   margin-bottom: 10px;
@@ -300,5 +362,10 @@ input {
   color: #fff;
   background: #1f1f1f;
   border-radius: 50px;
+}
+
+.autocomplete-input-fix {
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
 }
 </style>
